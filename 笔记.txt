@@ -1,0 +1,246 @@
+python -m django startproject 你要创建的项目
+可以创建一个项目
+python manage.py runserver 就是启动项目
+__pycache__：此文件夹存储我们生成项目时的编译字节码。您在很大程度上可以忽略此文件夹。其目的是通过缓存编译的代码来使您的项目启动得更快一些，然后可以轻松执行。
+__init__.py：此文件指定 Django 首次启动时要运行的内容。
+asgi.py：此文件允许运行可选的异步服务器网关接口 （ASGI）。
+settings.py：该文件是控制我们项目设置的重要文件。它包含几个属性：settings.py
+BASE_DIR：确定项目在计算机上的位置。
+SECRET_KEY：当有数据流入和流出您的网站时使用。永远不要与他人分享。
+DEBUG：我们的网站是否可以在调试模式下运行。在调试模式下，我们会获得有关错误的详细信息——例如，如果我们尝试在浏览器中运行，我们将看到找不到页面 （404） 错误：http://localhost:8000/123
+将我们的应用程序部署到生产环境时，我们应该设置为 .如果 = ，我们将看到一个没有错误详细信息的通用 404 页面。DEBUGFalseDEBUGFalse
+在开发项目时，我们应该设置 = 来帮助我们进行调试。DEBUGTrue
+INSTALLED_APPS：允许我们将不同的代码片段引入到项目中。我们稍后将看到这一点。
+MIDDLEWARE：指用于处理应用程序请求/响应的内置 Django 函数，包括身份验证、会话和安全性。
+ROOT_URLCONF：指定我们的网址所在的位置。
+TEMPLATES：定义模板引擎类、引擎应在其中查找模板源文件的目录列表以及特定的模板设置。
+AUTH_PASSWORD_VALIDATORS：允许我们指定我们想要的密码验证 - 例如，最小长度。
+
+urls.py：这个文件告诉 Django 渲染哪些页面来响应浏览器或 URL 请求。
+例如，当有人输入 URL 时，请求会进入并根据其中指定的路径路由到页面。稍后我们将向此文件添加路径，并更好地了解其工作原理。http://localhost:8000/123urls.py
+Wsgi.py：这个文件代表Web服务器网关接口（WSGI），帮助Django为我们的网页服务。部署我们的应用程序时会使用这两个文件。稍后，我们将在部署应用时重新访问它们。
+python3 manage.py startapp <name of app>
+电影应用程序 
+python manage.py startapp movie
+在moviereviews中的setting.py里面写上我新建的能够项目
+…
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'movie',
+]
+…
+在运行启动
+python manage.py runserver
+启动项目找到/admin就会发现Django  administration
+
+urls.py里面携程这样这样就可以访问movie的页面
+from django.contrib import admin
+from django.urls import path
+from movie import views as movieViews
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path('',movieViews.home),
+]
+
+views.py里面添加如下就可以显示我的内容
+from django.shortcuts import render
+from django.http import HttpResponse
+def home(request):
+    return HttpResponse('<h1>Welcome to Home Page</h1>')
+# Create your views here.
+
+urls.py 创建自定义的路径
+from django.contrib import admin
+from django.urls import path
+from movie import views as movieViews
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path('',movieViews.home),
+    #自定义路径
+    path('about/',movieViews.about),
+]
+
+views.py要写出urls的自定义路径的内容
+def about(request):
+    return HttpResponse('<h1>Welcome to About Page</h1>')
+
+
+第四个里面首先就是创建一个文件，里面创建一个html，里面写着我views里面home的内容
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Movies App</title>
+    </head>
+    <body>
+        <h1>Welcome to Home Page,{{name}}</h1>
+        <h2>This is the full home page</h2>
+    </body>
+</html>
+然后把views里面本来的删除，写上html文件地址，然后写上键值对，就是我要在网页上需要写上的内容，然后在我需要的地方写上{{你的键}}
+python manage.py migrate
+该命令基于 Django 的默认设置创建一个初始数据库。
+请注意，项目根文件夹中有一个文件。
+该文件代表我们的SQLite数据库。它是在我们第一次运行或. 使用 Django 的默认设置配置数据库。在前面的示例中，该命令应用了 18 个默认迁移（如图 5.2 所示）。这些迁移是由一些默认的 Django 应用程序定义的 – 、、 和 。这些应用加载到文件的变量中。因此，该命令运行所有已安装应用程序的迁移。请注意，这也会加载应用程序。但是，未为应用应用迁移。这是因为我们尚未为应用生成迁移：
+创建迁移
+python manage.py makemigrations
+这会为设置中所有预安装应用中定义的模型生成 SQL 命令。SQL 命令尚未执行，只是对模型进行所有更改的记录。
+然后，我们需要使用 （） 构建实际的数据库，该数据库执行迁移文件中的 SQL 命令。目前，它使用默认的 SQLite 数据库引擎，但您可以通过修改文件来集成自己的数据库系统。现在，在终端中执行以下操作。migratepython3 manage.py migratemoviereviews/settings.py
+python manage.py migrate
+总之，每次对模型文件进行更改时，都必须运行以下命令。
+
+对于 macOS，请运行以下命令：
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+对于 Windows，请运行以下命令：
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+但是我们如何访问我们的数据库并查看里面的内容呢？为此，我们在 Django 中使用了一个强大的工具，称为管理界面，下一节将详细介绍。
+
+创建一个超级用户
+python manage.py createsuperuser
+username   qjwe
+password qjwe1212
+修改密码的代码
+python manage.py changepassword <username>
+创建注册表单
+在我们的网站上，如果用户还没有帐户，他们必须先注册一个帐户。因此，让我们看一下如何创建注册帐户表单：
+
+python manage.py startapp accounts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
